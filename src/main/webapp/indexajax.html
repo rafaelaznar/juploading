@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JUploading ajax: upload files to the server example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {            
+            $("#uploadForm").submit(function () {
+                var form = document.getElementById('uploadForm');
+                $("#spinner").append('<img src="spinner.gif"></div>').fadeIn(1000);
+                oformData= new FormData(form);
+                oformData.append("id",4);
+                oformData.append("value","ajax...");
+                this.timer = setTimeout(function () {
+                    $.ajax({
+                        url: 'upload',
+                        processData: false,
+                        contentType: false,
+                        enctype: 'multipart/form-data',
+                        mimeType:"multipart/form-data",
+                        data: oformData,                         
+                        type: 'post',
+                        success: function (msg) {                            
+                            $("#spinner").empty().append(msg);
+                        }
+
+                    });
+                }, 200);
+                return false;
+            });
+        });
+    </script>
+    <body>
+        <h1>JUploading ajax: upload files to the server example</h1>
+        <div>
+            <h3>Choose File to Upload in Server </h3>
+            <form id="uploadForm" action="upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" id="file"/><br/><br/>
+                <input type="submit" value="upload file" /><br/>
+            </form>          
+            <div id="spinner"></div>
+        </div>
+    </body>
+</html>
+
+
+
+
+
+
+
+
