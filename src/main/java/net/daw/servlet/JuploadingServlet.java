@@ -26,29 +26,28 @@ public class JuploadingServlet extends HttpServlet {
         if (ServletFileUpload.isMultipartContent(request)) {
             try {
                 List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
-                for (FileItem item : multiparts) {
-                    if (!item.isFormField()) {
-                        name = new File(item.getName()).getName();
-                        item.write(new File(".//..//webapps//images//" + name));
-
-                    } else {
-                        hash.put(item.getFieldName(), item.getString());
-
+                if (multiparts != null && multiparts.size() > 0) {
+                    for (FileItem item : multiparts) {
+                        if (!item.isFormField()) {
+                            name = new File(item.getName()).getName();
+                            // you must webapps/images directory in TOMCAT
+                            item.write(new File(".//..//webapps//images//" + name));
+                        } else {
+                            hash.put(item.getFieldName(), item.getString());
+                        }
                     }
-
+                    strMessage = "<h1>File Uploaded Successfully</h1>";
+                    Iterator it = hash.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry e = (Map.Entry) it.next();
+                        strMessage += e.getKey() + " " + e.getValue() + "<br/>";
+                    }
+                    strMessage += "<img src=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + "/images/" + name + "\"  width=\"150\" /><br/>";
+                    strMessage += "<a href=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/juploading" + "\">Return</a><br/>";
+                    request.setAttribute("message", strMessage);
+                } else {
+                    throw new Exception("Wrong file size");
                 }
-                strMessage = "<h1>File Uploaded Successfully</h1>";
-                
-
-                Iterator it = hash.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry e = (Map.Entry) it.next();
-                    strMessage+= e.getKey() + " " + e.getValue() + "<br/>";
-                }
-
-                strMessage += "<img src=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + "/images/" + name + "\"  width=\"150\" /><br/>";
-                strMessage += "<a href=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/juploading" + "\">Return</a><br/>";
-                request.setAttribute("message", strMessage);
             } catch (Exception ex) {
                 request.setAttribute("message", "File Upload Failed: " + ex);
                 strMessage += "<a href=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/juploading" + "\">Return</a><br/>";
